@@ -46,7 +46,7 @@ app.use(logger('combined'))
 
 app.use(cors());
 app.use('/clientApis', cors(), router);
-app.use('/ondc/onboarding', subscriberRoute)
+app.use('/clientApis', subscriberRoute)
 app.use(logErrors)
 // app.use(logger('dev'));
 
