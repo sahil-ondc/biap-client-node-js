@@ -32,7 +32,7 @@ app.use(
 app.use(logger("combined"));
 
 const corsOptionsDelegate = function (req, callback) {
-  let corsOptions = { credentials: true };
+  let corsOptions = { credentials: false };
   corsOptions["origin"] = true;
   callback(null, corsOptions);
 };
