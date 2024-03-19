@@ -12,6 +12,7 @@ import BppConfirmService from "./bppConfirm.service.js";
 import JuspayService from "../../../payment/juspay.service.js";
 import CartService from "../cart/v2/cart.service.js";
 import FulfillmentHistory from "../db/fulfillmentHistory.js";
+import Order2 from "../../v1/db/onConfirmDump.js";
 const bppConfirmService = new BppConfirmService();
 const cartService = new CartService();
 const juspayService = new JuspayService();
@@ -224,8 +225,50 @@ class ConfirmOrderService {
                 }
 
                 console.log("processOnConfirmResponse----------------dbResponse.items-------------->",dbResponse)
-                console.log("processOnConfirmResponse----------------dbResponse.orderSchema-------------->",orderSchema)
+                // console.log("onConfirmResponse----------------dbResponse.items-------------->",dbResponse)
 
+                // const onConfirmResponse = new Order2( dbResponse );
+                // console.log("onConfirmResponse----------------dbResponse.items-------------->",onConfirmResponse)
+
+                // await onConfirmResponse.save();
+
+                // console.log("onConfirmResponse.save()----------------dbResponse.items-------------->",onConfirmResponse)
+
+
+                // console.log("processOnConfirmResponse----------------dbResponse.orderSchema-------------->",orderSchema)
+              
+
+                const newDataInstance = new Order2();
+
+                // Populate the new instance with data from dbResponse
+                newDataInstance.provider = dbResponse.provider;
+                newDataInstance.items = dbResponse.items;
+                newDataInstance.addOns = dbResponse.addOns;
+                newDataInstance.offers = dbResponse.offers;
+                newDataInstance.billing = dbResponse.billing;
+                newDataInstance.fulfillments = dbResponse.fulfillments;
+                newDataInstance.quote = dbResponse.quote;
+                newDataInstance.payment = dbResponse.payment;
+                newDataInstance.userId = dbResponse.userId;
+                newDataInstance.transactionId = dbResponse.transactionId;
+                newDataInstance.messageId = dbResponse.messageId;
+                newDataInstance.parentOrderId = dbResponse.parentOrderId;
+                newDataInstance.paymentStatus = dbResponse.paymentStatus;
+                newDataInstance.bppId = dbResponse.bppId;
+                newDataInstance.bpp_uri = dbResponse.bpp_uri;
+                newDataInstance.settlementDetails = dbResponse.settlementDetails;
+                newDataInstance.tags = dbResponse.tags;
+                newDataInstance._id = dbResponse._id;
+                newDataInstance.updatedAt = dbResponse.updatedAt;
+                newDataInstance.createdAt = dbResponse.createdAt;
+                newDataInstance.__v = dbResponse.__v;
+    
+                // Save the new instance to the database
+                await newDataInstance.save();
+    
+                console.log("Data saved successfully:>>>>>>>>>>>", newDataInstance);
+
+                
                 if(orderSchema.items && dbResponse.items) {
                     orderSchema.items = dbResponse.items
                 }

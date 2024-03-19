@@ -82,11 +82,11 @@ export const initiateRsp = async ()=> {
               // })
    
               // const paymentObj = on_confirm.payload.message.order.payment
-                let bap_id = seller.logistics_bap_id
+                // let bap_id = seller.logistics_bap_id
               // if (paymentObj.status === "PAID") {
               //   bap_id = on_confirm.payload.context.bap_id
               // }
-             console.log("el88>",orderDetails._id)
+            //  console.log("el88>",orderDetails._id)
                const response = {
                 //   id: orderDetails._id,
                 //  invoice_no: uuidv4(),

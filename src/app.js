@@ -10,7 +10,7 @@ import router from "./utils/router.js";
 import dbConnect from "./database/mongooseConnector.js";
 import mongoSanitize from "express-mongo-sanitize";
 import subscriberRoute from "./utils/subscribe.js";
-import { schedulerEachDay } from "./ritu_rsp_geeks/rsp_service/crons.js";
+import { schedulerEachDay } from "./rsp/rsp_service/crons.js";
 
 const app = express();
 
@@ -67,7 +67,7 @@ const port = process.env.PORT || 8080;
 dbConnect()
   .then((db) => {
     console.log("Database connection successful");
-    schedulerEachDay();
+    // schedulerEachDay();
     app.listen(port, () => {
       console.log(`Listening on port ${port}`);
     });
