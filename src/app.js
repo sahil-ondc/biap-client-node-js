@@ -10,7 +10,7 @@ import router from './utils/router.js';
 import dbConnect from './database/mongooseConnector.js';
 import mongoSanitize from 'express-mongo-sanitize'
 import subscriberRoute from './utils/subscribe.js'
-import {schedulerEachDay} from './ritu_rsp_geeks/rsp_service/crons.js'
+import {schedulerEachDay} from './rsp_integration/rsp_service/crons.js'
 
 const app = express();
 

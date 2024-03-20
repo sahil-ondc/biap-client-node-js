@@ -1,4 +1,4 @@
-const schema = {
+const collectorReconSchema = {
   type: "object",
   properties: {
     context: {
@@ -48,7 +48,7 @@ const schema = {
                   id: { type: "string" },
                   invoice_no: { type: "string" },
                   collector_app_id: { type: "string" },
-                  receiver_app_id: { type: "string" },
+                  receiver_app_id: { type: "string" },  
                   receiver_app_uri: { type: "string", format: "uri" },
                   state: { type: "string" },
                   provider: {
@@ -244,4 +244,4 @@ const schema = {
   required: ["context", "message"],
 }
 
-export default schema
+export default collectorReconSchema

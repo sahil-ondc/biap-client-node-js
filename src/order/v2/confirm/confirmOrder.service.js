@@ -6,7 +6,7 @@ import {
     getOrderByTransactionIdAndProvider,
     getOrderById
 } from "../../v1/db/dbService.js";
-
+import OnConfirmData from "../../v1/db/onConfirmDump.js"
 import ContextFactory from "../../../factories/ContextFactory.js";
 import BppConfirmService from "./bppConfirm.service.js";
 import JuspayService from "../../../payment/juspay.service.js";
@@ -178,7 +178,33 @@ class ConfirmOrderService {
     async processOnConfirmResponse(response = {}) {
         try {
 
-            console.log("processOnConfirmResponse------------------------------>",response)
+            console.log("processOnConfirmResponse------------------------------>",JSON.stringify(response))
+            const newDataInstance = new OnConfirmData({
+                message: {
+                    order: {
+                        updated_at: response.message.order.updated_at,
+                        created_at: response.message.order.created_at,
+                        id: response.message.order.id,
+                        state: response.message.order.state,
+                        provider: response.message.order.provider,
+                        items: response.message.order.items,
+                        billing: response.message.order.billing,
+                        fulfillments: response.message.order.fulfillments,
+                        quote: response.message.order.quote,
+                        payment: JSON.stringify(response.message.order.payment),
+                        documents: response.message.order.documents,
+                        cancellation_terms: response.message.order.cancellation_terms,
+                        tags: response.message.order.tags
+                    },
+                    created_at: response.message.created_at,
+                    updated_at: response.message.updated_at
+                },
+                context: response.context
+            });
+            
+            // Save the new instance to the database
+            await newDataInstance.save();
+            console.log("newDataInstance>>>>>>>>>>>",newDataInstance)
             console.log("processOnConfirmResponse------------------------------>",response?.message?.order.provider)
             if (response?.message?.order) {
                 const dbResponse = await getOrderByTransactionIdAndProvider(
@@ -224,6 +250,7 @@ class ConfirmOrderService {
                 }
 
                 console.log("processOnConfirmResponse----------------dbResponse.items-------------->",dbResponse)
+            
                 console.log("processOnConfirmResponse----------------dbResponse.orderSchema-------------->",orderSchema)
 
                 if(orderSchema.items && dbResponse.items) {
@@ -402,6 +429,7 @@ class ConfirmOrderService {
                 protocolConfirmResponse.context.message_id &&
                 protocolConfirmResponse.context.transaction_id
             ) {
+                console.log("protocolConfirmResponse>>>>>>>>>",JSON.stringify(protocolConfirmResponse))//,protocolConfirmResponse)
                 return protocolConfirmResponse;
 
             } else {
