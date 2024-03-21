@@ -61,8 +61,7 @@ class MapController {
 
   async getPincode(req, res, next) {
     const { lat, lon } = req.query;
-    console.log("lat", lat);
-    console.log("lon", lon);
+
     try {
       const result = await axios.get(
         "https://api.geoapify.com/v1/geocode/reverse",
