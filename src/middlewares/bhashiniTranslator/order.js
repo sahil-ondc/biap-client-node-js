@@ -8,16 +8,19 @@ export const bhashiniTranslator = async (req, res, next) => {
     } else {
       lang = req.query.lang;
     }
+    // console.error("bhashiniTranslator",lang)
+
     let responseData = req.body.responseData;
-    const valuesToTranslate = responseData.map((item) => [
-        item?.descriptor?.name,
-        item?.address?.door,
-        item?.address?.street,
-        item?.address?.city,
-        item?.address?.state,
-        item?.address?.country,
-        item?.address?.tag
+    const valuesToTranslate = responseData.orders.map((item,index) => [
+        item?.provider?.descriptor?.name,
+        item?.billing?.address?.locality,
+        item?.billing?.address?.city,
+        item?.billing?.address?.state,
+        item?.billing?.address?.country,
+        item?.billing?.address?.building,
+        item?.items[0]?.product?.descriptor?.name
       ]);
+
     // console.error("valuesToTranslate",valuesToTranslate)
 
     let data = {
@@ -63,19 +66,17 @@ export const bhashiniTranslator = async (req, res, next) => {
 
         // console.log('translatedValues',translatedValues)
 
-        responseData = responseData.map((item,index) => {
-          // console.log('item, before',index,item)
+        responseData = responseData.orders.map((item,index) => {
+        //   console.log('item, before',index,item)
             let transIndex = (index * 7);
-          
-            item.descriptor.name = index == 0 ? translatedValues[7] : translatedValues[transIndex]
-            item.address.door = translatedValues[++transIndex]
-            item.address.street = translatedValues[++transIndex]
 
-            item.address.city = translatedValues[++transIndex]
-            item.address.state = translatedValues[++transIndex]
-            item.address.country = translatedValues[++transIndex]
-            item.address.tag = translatedValues[++transIndex]
-            // console.log('item,index',index,item)
+            item.provider.descriptor.name = translatedValues[transIndex]
+            item.billing.address.locality = translatedValues[++transIndex]
+            item.billing.address.city = translatedValues[++transIndex]
+            item.billing.address.state = translatedValues[++transIndex]
+            item.billing.address.country = translatedValues[++transIndex]
+            item.billing.address.building = translatedValues[++transIndex]
+            item.items[0].product.descriptor.name = translatedValues[++transIndex]
             return item
 
 
