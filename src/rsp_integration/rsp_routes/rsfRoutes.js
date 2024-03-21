@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import { authentication } from '../../middlewares/index.js';
 
-import onCollectorRecon from "../rsp_service/on_collector_recon.js"
+import {onCollectorReconController} from "../rsp_controller/index.js"
 export const rootRouter = new Router();
 
 // const recieivereconController= new RecieiverReconController()
@@ -11,7 +11,7 @@ export const rootRouter = new Router();
 
 // confirm order v1
 rootRouter.post(
-    '/v2/recon_status',
+    '/v2/onCollector',onCollectorReconController.onCollectorRecon,
 );
 
 

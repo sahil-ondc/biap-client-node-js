@@ -1,11 +1,9 @@
-import { PrismaClient } from "@prisma/client"
-import { logger } from "../shared/logger"
-
+import OnConfirmData from "../../order/v1/db/onConfirmDump.js" 
 export const onCollectorRecon = async (req)=> {
   try {
     await Promise.all(
       req.message.orderbook.orders.map(async (order) => {
-        await prisma.orderDetails.update({
+        await OnConfirmData.update({
           where: {
             buyer_order_id: order.id,
           },
@@ -17,6 +15,6 @@ export const onCollectorRecon = async (req)=> {
       }),
     )
   } catch (e) {
-    logger.error(e.message)
+    console.log(e.message)
   }
 }

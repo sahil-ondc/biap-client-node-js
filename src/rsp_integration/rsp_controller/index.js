@@ -1,13 +1,11 @@
-import { Response, Request } from "express"
-import { logger } from "../../shared/logger"
-import { onCollectorRecon } from "../../services/on_collector_recon"
+import { onCollectorRecon } from"../rsp_service/onCollectorRecon.js"
 
-const controller = {
+export const onCollectorReconController = {
   onCollectorRecon: async (req) => {
-    logger.info(`Called - onCollectorResponse: ${JSON.stringify(req.body)}`)
+    console.log(`Called - onCollectorResponse: ${JSON.stringify(req.body)}`)
     await onCollectorRecon(req.body)
-    return
+    console.log("7>>>>>>>>>>")
+    return "ACK"
   },
 }
 
-export default controller
