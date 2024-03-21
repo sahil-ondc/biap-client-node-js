@@ -1,11 +1,15 @@
  import { addDays } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
+import { ObjectId } from 'mongodb';
+import axios from "axios"
 import moment from 'moment';
 import order from '../../order/v1/db/order.js';
 import OnConfirmData from "../../order/v1/db/onConfirmDump.js"
 import {rsp_constants} from "../../utils/rspConstant.js"
 // import collectorSchema from "../../rsp_integration/rsp_schema/collector_recon.js"
-import schemaValidator from "../../shared/schemaValidator.js"
+import { validate_schema_collector_recon_NTS10_for_json } from "../../shared/schemaValidator.js"
+// Import Underscore.js in a JavaScript module environment
+import _ from 'underscore';
 
 // import { logger } from "../../shared/logger";
 // const uuid = uuidv4();
@@ -16,6 +20,7 @@ export const initiateRsp = async ()=> {
 
     try {
       const date = new Date().toISOString()
+      console.log("23>>>>>>>>>",date)
       let orderDetails = await order.find({
         $and: [
           {state: "Completed"},
@@ -58,11 +63,12 @@ export const initiateRsp = async ()=> {
             core_version: rsp_constants.CORE_VERSION,
             bap_id: process.env.RSP_ID,
             bap_uri: process.env.RSP_URI,
+           
             bpp_id: el[0]?.bppId,
             bpp_uri: el[0]?.bpp_uri,
             transaction_id: uuidv4(),
             message_id: uuidv4(),
-            timestamp: date,
+            timestamp: "2024-03-21T11:07:15.010Z",
             ttl: "P3D",
           }
            console.log(`initiateRsp el : ${el?.length}, el[0]?.bpp_id: ${el[0]?.bppId}`)
@@ -79,18 +85,14 @@ export const initiateRsp = async ()=> {
                 },
               })
 
-              console.log("order>>>>", on_confirm)
-              // console.log("order>>>>", JSON.stringify(orderData._id))
               const seller = await OnConfirmData.findOne({
                 where: {
                   bpp_uri: on_confirm.context.bpp_uri,
                   bpp_id: on_confirm.context.bpp_id,
                 },
               })
-              console.log("seller>>>>", seller)
 
               const paymentObj = JSON.parse(on_confirm.message.order.payment)
-              console.log("paymentObj>>>>", paymentObj)
           // let bap_id = seller.logistics_bap_id
           // let bap_uri = seller.logistics_bap_uri
 
@@ -100,9 +102,18 @@ export const initiateRsp = async ()=> {
           //   bap_id = on_confirm.payload.context.bap_id
           //   bap_uri = on_confirm.payload.context.bap_uri
           // }
-          //    console.log("el88>",on_confirm.payload.context?.bap_id)
+              const objectId = (orderDetails[0]._id).toString()
+              console.log("process.env.RSP_ID",paymentObj["@ondc/org/settlement_details"][0].settlement_ifsc_code)
+              const defaultCharacters = 'XXXXXXXXXXX'; // Default characters to append
+
+const settlementIfscCode = paymentObj["@ondc/org/settlement_details"][0].settlement_ifsc_code;
+
+const updatedIfscCode = settlementIfscCode.length < 11 ? settlementIfscCode + defaultCharacters.slice(settlementIfscCode.length) : settlementIfscCode;
+
+
+
                const response = {
-                  id: orderDetails[0]._id,
+                  id:objectId ,
                  invoice_no: uuidv4(),
                  collector_app_id: bap_id,
                  receiver_app_id: on_confirm.context?.bap_id,
@@ -113,11 +124,11 @@ export const initiateRsp = async ()=> {
                     name: seller.message.order.fulfillments[0]["@ondc/org/provider_name"], // NIL
                     code: seller.message.order.fulfillments[0].state.descriptor.code, // NIL
                   },
-                  address: seller.message.order.fulfillments[0].start.location,
+                  address: JSON.stringify(seller.message.order.fulfillments[0].start.location.address),
                 },
                 payment: {
                   uri: orderDetails[0].payment.uri, // NIL], 
-                  // tl_method: paymentObj.tl_method, // NIL
+                  tl_method: "NIL", // NIL
                   params: {
                     transaction_id: paymentObj.params.transaction_id, // NIL
                     transaction_status: paymentObj.status, // NIL
@@ -130,13 +141,13 @@ export const initiateRsp = async ()=> {
                   "@ondc/org/collected_by_status": "Assert",
                   "@ondc/org/buyer_app_finder_fee_type": paymentObj["@ondc/org/buyer_app_finder_fee_type"],
                   "@ondc/org/buyer_app_finder_fee_amount": paymentObj["@ondc/org/buyer_app_finder_fee_amount"],
-                  "@ondc/org/withholding_amount": paymentObj["@ondc/org/withholding_amount"], // NIL
+                  "@ondc/org/withholding_amount": "", // Need to do in future
                   "@ondc/org/withholding_amount_status": "Assert",
                   "@ondc/org/return_window": "P6D",
                   "@ondc/org/return_window_status": "Assert",
-                  "@ondc/org/settlement_basis": paymentObj["@ondc/org/settlement_basis"], // NIL
+                  "@ondc/org/settlement_basis": "", // Need to do in future
                   "@ondc/org/settlement_basis_status": "Assert",
-                  "@ondc/org/settlement_window": paymentObj["@ondc/org/settlement_window"], // NIL
+                  "@ondc/org/settlement_window":"", // Need to do in future
                   "@ondc/org/settlement_window_status": "Assert",
                   "@ondc/org/settlement_details": [
                     {
@@ -146,12 +157,12 @@ export const initiateRsp = async ()=> {
                       settlement_type: paymentObj["@ondc/org/settlement_details"][0].settlement_type,
                       settlement_bank_account_no:
                         paymentObj["@ondc/org/settlement_details"][0].settlement_bank_account_no,
-                      settlement_ifsc_code: paymentObj["@ondc/org/settlement_details"][0].settlement_ifsc_code,
+                      settlement_ifsc_code: paymentObj["@ondc/org/settlement_details"][0].settlement_ifsc_code || "XXXXXXXXXXX",
                       upi_address: paymentObj["@ondc/org/settlement_details"][0].upi_address, // NIL
                       bank_name: paymentObj["@ondc/org/settlement_details"][0].bank_name,
                       branch_name: paymentObj["@ondc/org/settlement_details"][0].branch_name,
                       beneficiary_name: paymentObj["@ondc/org/settlement_details"][0].beneficiary_name,
-                      beneficiary_address: seller?.bppproviders_locations_address_city,
+                      beneficiary_address: JSON.stringify(seller.message.order.fulfillments[0].start.location.address),
                       settlement_status: "NOT-PAID",
                       settlement_reference: uuidv4(),
                       settlement_timestamp: date,
@@ -175,12 +186,12 @@ export const initiateRsp = async ()=> {
                 },
                 payerdetails: {
                   payer_name: paymentObj["@ondc/org/settlement_details"][0].beneficiary_name,
-                  payer_address: seller.message.order.fulfillments[0].start.location,
+                  payer_address: seller.message.order.fulfillments[0].start.location.address.name,
                   payer_account_no: paymentObj["@ondc/org/settlement_details"][0].settlement_bank_account_no,
-                  payer_bank_code: paymentObj["@ondc/org/settlement_details"][0].settlement_ifsc_code,
+                  payer_bank_code: updatedIfscCode,
                   payer_virtual_payment_address:  "N/A", // NIL
                 },
-              //   settlement_reason_code: "01",
+                settlement_reason_code: "01",
                 created_at: date,
                 updated_at: date,
                }
@@ -188,21 +199,30 @@ export const initiateRsp = async ()=> {
               return response
             }),
           )
+          console.log("order>>>>", request_body.message.orderbook.orders)
+
           const rsp_uri = process.env.RSP_URI
+          console.log("rsp_uri>>>>>>>>>>>>",rsp_uri)
+          console.log("192>>>>>>>>>>>>>>>",JSON.stringify(request_body))
           const validateResult = validateRSPActionSchema(request_body, request_body.context.domain, baseUrl)
    
           if (!_.isEmpty(validateResult)) {
-            console.log.error(`initiateRsp on_receiver_recon validation error: ${JSON.stringify(validateResult)}`)
+            console.log(`initiateRsp on_receiver_recon validation error: ${JSON.stringify(validateResult)}`)
             return { success: false }
           }
    
-          console.log.error(`initiateRsp request_body - collector_recon : ${JSON.stringify(request_body)}`)
-          const httpRequest = new HttpRequest(rsp_uri, baseUrl, "POST", request_body)
-          await httpRequest.send()
-   
-          const orderIds = on_confirm.message.order.ID
-          console.log("orderIds>>>>>>>",orderIds)
-          await changeStatus(orderIds)
+          console.log(`initiateRsp request_body - collector_recon : ${JSON.stringify(request_body)}`)
+          try {
+            const axiosRes = await axios.post(`${rsp_uri}/${baseUrl}`, request_body)
+            console.log("httpRequest>>>>>>>", axiosRes.data)
+          } catch (error) {
+            console.log("httpRequest Error >>>>>>>", error?.response?.data)
+          }
+          
+           
+          // const orderIds = on_confirm.message.order.ID
+          // console.log("orderIds>>>>>>>",orderIds)
+          // await changeStatus(orderIds)
           return { success: true }
       }),
       )
@@ -270,12 +290,17 @@ export const validateSchema = (domain, api, data) => {
 
 const validate_schema_for_retail_json = (vertical, api, data) => {
   console.log("validate_schema_for_retail_json>>>>", vertical, api, data)
-  console.log("validate_schema_for_retail_json>>>>22", (schemaValidator)[`validate_schema_${api}_${vertical}_for_json`])
-  console.log("validate_schema_collector_recon_NTS10_for_json>>>>", data)
+  console.log("validate_schema_collector_recon_NTS10_for_json>>>>1234", data.context.timestamp)
+ const res = validate_schema_collector_recon_NTS10_for_json(data)
+ console.log("275>>>>>>>>>>>",`validate_schema_${api}_${vertical}_for_json`)
 
-  const res = (schemaValidator)[`validate_schema_${api}_${vertical}_for_json`](data)
-  console.log("schemaValidator>>>>>>>>>>>>>", res)
+ try {
+  console.log("res>>>>>>>>>>>>>", res)
   return res
+ } catch (error) {
+  console.log(error)
+ }
+
 }
 
 

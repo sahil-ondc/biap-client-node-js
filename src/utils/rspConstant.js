@@ -8,4 +8,5 @@ export const rsp_constants = {
     PAID: "PAID",
     SUBSCRIBED: "SUBSCRIBED",
     DOMAIN: "ONDC:NTS10",
+    CITY:"*"
   }

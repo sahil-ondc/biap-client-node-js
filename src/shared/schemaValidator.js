@@ -42,15 +42,20 @@ const formatted_error = (errors) => {
   return error_json
 }
  
-const validate_schema = (data, schema) => {
+export const validate_schema = (data, schema) => {
+  console.log("46",data)
+  console.log("47",schema)
+
   let error_list = []
  
   const validate = ajv.compile(schema)
   const valid = validate(data)
   if (!valid) {
+    console.log("51>>>>>>>>>>>>>>")
     error_list = validate.errors
   }
- 
+  console.log("54>>>>>>>>>>>>>>")
+
   return error_list
 }
  
@@ -193,7 +198,7 @@ const validate_schema = (data, schema) => {
 // const validate_schema_on_status_RET18_for_json = (data) => {
 //   const error_list = validate_schema(data, onStatusSchema)
 //   return formatted_error(error_list)
-// }
+// }√
  
 // const validate_schema_receiver_recon_NTS10_for_json = (data) => {
 //   const error_list = validate_schema(data, receiverReconSchema)
@@ -205,8 +210,8 @@ const validate_schema = (data, schema) => {
 //   return formatted_error(error_list)
 // }
  
-const validate_schema_collector_recon_NTS10_for_json = (data) => {
-  console.log("validate_schema_collector_recon_NTS10_for_json>>>>", data)
+export const validate_schema_collector_recon_NTS10_for_json = (data) => {
+  console.log("validate_schema_collector_recon_NTS10_for_json>>>>========", JSON.stringify(data))
   const error_list = validate_schema(data, collectorReconSchema)
   return formatted_error(error_list)
 }
@@ -216,7 +221,7 @@ const validate_schema_collector_recon_NTS10_for_json = (data) => {
 //   return formatted_error(error_list)
 // }
  
- export default  validate_schema_collector_recon_NTS10_for_json
+//  export default  validate_schema_collector_recon_NTS10_for_json
 
 //   validate_schema_search_RET12_for_json,
 //   validate_schema_search_RET18_for_json,
