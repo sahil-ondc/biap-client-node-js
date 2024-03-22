@@ -2,7 +2,6 @@ import loadEnvVariables from './utils/envHelper.js';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import express from "express";
-import cors from "cors";
 import logger from 'morgan';
 import initializeFirebase from './lib/firebase/initializeFirebase.js';
 import logErrors from './utils/logErrors.js';
@@ -29,7 +28,7 @@ app.use(
         },
     }),
 );
-app.use(logger('combined'))
+app.use(logger("combined"));
 
 //
 // // Global exception handler for HTTP/HTTPS requests
@@ -45,10 +44,10 @@ app.use(logger('combined'))
 //     res.status(500).json({ error: 'Something went wrong. Please try again' });
 // });
 
-app.use(cors());
-app.use('/clientApis', cors(), router);
-app.use('/ondc/onboarding/', subscriberRoute)
-app.use(logErrors)
+// app.use(cors());
+app.use("/clientApis", router);
+app.use("/ondc/onboarding/", subscriberRoute);
+app.use(logErrors);
 // app.use(logger('dev'));
 
 app.get("*", (req, res) => {

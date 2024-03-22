@@ -58,6 +58,45 @@ class MapController {
       next(err);
     }
   }
+
+  async getPincode(req, res, next) {
+    const { lat, lon } = req.query;
+
+    try {
+      const result = await axios.get(
+        "https://api.geoapify.com/v1/geocode/reverse",
+        {
+          params: {
+            lat: req.query.lat,
+            lon: req.query.lon,
+            apiKey: process.env.MAP_API_KEY,
+          },
+        }
+      );
+      const { country, city, postcode } = result?.data?.features[0]?.properties;
+
+      if (result?.data?.features[0]?.properties == undefined) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid Coordinates",
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        data: {
+          postcode: postcode,
+          city: city,
+          country: country,
+        },
+      });
+    } catch (err) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Coordinates",
+      });
+      next(err);
+    }
+  }
 }
 
 export default MapController;

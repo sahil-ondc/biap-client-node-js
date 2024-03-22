@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authentication } from "../middlewares/index.js";
-
+import {bhashiniTranslator} from '../../src/middlewares/bhashiniTranslator/deliveryAddress.js';
 import BillingController from "./billings/billing.controller.js";
 import DeliveryAddressController from "./deliveryAddress/deliveryAddress.controller.js";
 import MapController from "./map/map.controller.js";
@@ -44,7 +44,8 @@ rootRouter.post(
 rootRouter.get(
   "/v1/delivery_address",
   authentication(),
-  deliveryAddressController.onDeliveryAddressDetails
+  deliveryAddressController.onDeliveryAddressDetails,
+  bhashiniTranslator
 );
 
 rootRouter.post(
@@ -62,6 +63,7 @@ rootRouter.delete(
 rootRouter.get("/v2/map/accesstoken", authentication(), mapController.mmiToken);
 
 rootRouter.get("/v2/map/getCordinates", mapController.getCoordinates);
+rootRouter.get("/v2/map/getPinCode", mapController.getPincode);
 
 //#endregion
 export default rootRouter;
