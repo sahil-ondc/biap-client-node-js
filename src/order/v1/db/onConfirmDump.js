@@ -20,7 +20,7 @@ const LocationSchema = new Schema({
 });
 
 const ContactSchema = new Schema({
-  phone: String,
+  phone: String,  
   email: String
 });
 

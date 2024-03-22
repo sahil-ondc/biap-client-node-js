@@ -63,7 +63,7 @@ const port = process.env.PORT || 8080;
 dbConnect()
     .then((db) => {
         console.log("Database connection successful");
-        // schedulerEachDay()
+        schedulerEachDay()
         app.listen(port, () => {
             console.log(`Listening on port ${port}`);
         });

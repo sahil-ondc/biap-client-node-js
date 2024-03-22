@@ -1,4 +1,4 @@
-const schema = {
+const onCollectonschema = {
   type: "object",
   properties: {
     context: {
@@ -10,12 +10,12 @@ const schema = {
         action: { type: "string" },
         core_version: { type: "string" },
         bap_id: { type: "string" },
-        bap_uri: { type: "string", format: "uri" },
+        bap_uri: { type: "string", default: "https://buyer-app-stage.thewitslab.com/" },
         bpp_id: { type: "string" },
-        bpp_uri: { type: "string", format: "uri" },
+        bpp_uri: { type: "string"},
         transaction_id: { type: "string" },
         message_id: { type: "string" },
-        timestamp: { type: "string", format: "date-time" },
+        timestamp: { type: "string" },
         ttl: { type: "string" },
       },
       required: [
@@ -107,4 +107,4 @@ const schema = {
   required: ["context", "message"],
 }
 
-export default schema
+export default onCollectonschema
