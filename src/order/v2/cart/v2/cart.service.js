@@ -100,7 +100,7 @@ class CartService {
                 console.log('jatinder cart',cart,'cart2',cart2)
             }
 
-            let cart1Item;
+            let cart1Item=[];
             let newCart = [];
             console.log(`cart: ${cart}`)
             if(cart){
@@ -112,8 +112,8 @@ class CartService {
             if(cart2){
                 let cart2Item = await CartItem.find({cart:cart2._id});
                 newCart =[...cart1Item,...cart2Item];
-                // await CartItem.updateOne({cart:cart._id},{ $set: { item: newCart }});
-                // await Cart.deleteOne({ ipAddress: data.ipAddress });
+                await CartItem.updateOne({cart:cart._id},{ $set: { item: newCart }});
+                await Cart.deleteOne({ ipAddress: data.ipAddress });
             }
 
             return newCart;
