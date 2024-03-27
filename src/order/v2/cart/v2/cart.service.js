@@ -112,8 +112,8 @@ class CartService {
             if(cart2){
                 let cart2Item = await CartItem.find({cart:cart2._id});
                 newCart =[...cart1Item,...cart2Item];
-                await CartItem.updateOne({cart:cart._id},{ $set: { item: newCart }});
-                await Cart.deleteOne({ ipAddress: data.ipAddress });
+                // await CartItem.updateOne({cart:cart._id},{ $set: { item: newCart }});
+                // await Cart.deleteOne({ ipAddress: data.ipAddress });
             }
 
             return newCart;
