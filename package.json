@@ -6,6 +6,9 @@
   "type": "module",
   "dependencies": {
     "@google-cloud/secret-manager": "^3.11.0",
+    "ajv": "^8.12.0",
+    "ajv-errors": "^3.0.0",
+    "ajv-formats": "^2.1.1",
     "aws-sdk": "^2.1300.0",
     "axios": "^0.26.1",
     "axios-retry": "^4.0.0",
@@ -33,6 +36,7 @@
     "pino-http": "^9.0.0",
     "razorpay": "^2.9.2",
     "redis": "^4.6.13",
+    "underscore": "^1.13.6",
     "uuid": "^8.3.2",
     "uuidv4": "^6.2.13",
     "winston": "^3.8.1"

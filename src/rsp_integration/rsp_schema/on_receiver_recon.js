@@ -1,4 +1,4 @@
-// const schema = {
+// export const OnReceiverReconschema = {
 //   type: "object",
 //   properties: {
 //     context: {
@@ -53,15 +53,6 @@
 //                   transaction_id: { type: "string" },
 //                   settlement_id: { type: "string" },
 //                   settlement_reference_no: { type: "string" },
-//                   recon_status: { type: "string" },
-//                   diff_amount: {
-//                     type: "object",
-//                     properties: {
-//                       currency: { type: "string", enum: ["INR", ""] }, // mock server issue
-//                       value: { type: ["string", "null"] },
-//                     },
-//                     required: ["currency"],
-//                   },
 //                   counterparty_recon_status: { type: "string" },
 //                   counterparty_diff_amount: {
 //                     type: "object",
@@ -89,8 +80,6 @@
 //                   "transaction_id",
 //                   "settlement_id",
 //                   "settlement_reference_no",
-//                   "recon_status",
-//                   "diff_amount",
 //                   "counterparty_recon_status",
 //                   "counterparty_diff_amount",
 //                   "message",
@@ -107,4 +96,3 @@
 //   required: ["context", "message"],
 // }
 
-// export default schema

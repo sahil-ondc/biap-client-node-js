@@ -1,4 +1,4 @@
-const schema = {
+const collectorReconSchema = {
   type: "object",
   properties: {
     context: {
@@ -9,13 +9,13 @@ const schema = {
         city: { type: "string" },
         action: { type: "string" },
         core_version: { type: "string" },
-        bap_id: { type: "string" },
-        bap_uri: { type: "string", format: "uri" },
+        bap_id: { type: "string"},
+        bap_uri: { type: "string"},
         bpp_id: { type: "string" },
-        bpp_uri: { type: "string", format: "uri" },
+        bpp_uri: { type: "string" },
         transaction_id: { type: "string" },
         message_id: { type: "string" },
-        timestamp: { type: "string", format: "date-time" },
+        timestamp: { type: "string" },
         ttl: { type: "string" },
       },
       required: [
@@ -48,8 +48,8 @@ const schema = {
                   id: { type: "string" },
                   invoice_no: { type: "string" },
                   collector_app_id: { type: "string" },
-                  receiver_app_id: { type: "string" },
-                  receiver_app_uri: { type: "string", format: "uri" },
+                  receiver_app_id: { type: "string" },  
+                  receiver_app_uri: { type: "string"},
                   state: { type: "string" },
                   provider: {
                     type: "object",
@@ -112,7 +112,7 @@ const schema = {
                             beneficiary_name: { type: "string" },
                             beneficiary_address: { type: "string" },
                             settlement_status: { type: "string" },
-                            settlement_timestamp: { type: "string", format: "date-time" },
+                            settlement_timestamp: { type: "string" },
                           },
                           required: [
                             "settlement_counterparty",
@@ -212,8 +212,8 @@ const schema = {
                     },
                     required: ["name", "code"],
                   },
-                  created_at: { type: "string", format: "date-time" },
-                  updated_at: { type: "string", format: "date-time" },
+                  created_at: { type: "string" },
+                  updated_at: { type: "string" },
                 },
                 required: [
                   "id",
@@ -244,4 +244,4 @@ const schema = {
   required: ["context", "message"],
 }
 
-export default schema
+export default collectorReconSchema

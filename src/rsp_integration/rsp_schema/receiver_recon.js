@@ -1,4 +1,4 @@
-// const schema = {
+// export const ReceiverReconschema = {
 //   type: "object",
 //   properties: {
 //     context: {
@@ -237,4 +237,3 @@
 //   required: ["context", "message"],
 // }
 
-// export default schema
