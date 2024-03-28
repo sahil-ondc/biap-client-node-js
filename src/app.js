@@ -10,7 +10,7 @@ import dbConnect from './database/mongooseConnector.js';
 import mongoSanitize from 'express-mongo-sanitize'
 import subscriberRoute from './utils/subscribe.js'
 import {schedulerEachDay} from './rsp_integration/rsp_service/crons.js'
-
+import settleRouter from "./settlement/settle.routes.js"
 const app = express();
 
 loadEnvVariables();
@@ -45,6 +45,9 @@ app.use(logger("combined"));
 // });
 
 // app.use(cors());
+
+app.use("/api",settleRouter)
+
 app.use("/clientApis", router);
 app.use("/ondc/onboarding/", subscriberRoute);
 app.use(logErrors);
