@@ -314,6 +314,7 @@ const QuotationSchema = new mongoose.Schema(
 const PaymentSchema = mongoose.Schema(
     {
         uri: { type: String },
+        razorpayPaymentId:{ type: String },
         tlMethod: { type: String, enum: ['http/get', 'http/post'] },
         params: { type: Map },
         type: { type: String, enum: ['ON-ORDER', 'PRE-FULFILLMENT', 'ON-FULFILLMENT', 'POST-FULFILLMENT'] },
