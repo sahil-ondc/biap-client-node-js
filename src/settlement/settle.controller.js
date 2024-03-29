@@ -22,7 +22,7 @@ export async function getSettlementsHandler(req, res) {
              .limit(limitValue)
              .skip(skip);
  
-        
+        console.log("completedOrders>>>>>>>>>>",completedOrders)
         const confirmedOrders = await ConfirmModel.find({});
 
         let count = skip; // Initialize count with skip value
@@ -32,8 +32,8 @@ export async function getSettlementsHandler(req, res) {
 
         completedOrders.forEach(({ _id, transactionId, context, createdAt, updatedAt, state, quote, items }) => {
             count++;
-            // sumCompletedOrderAmount += parseFloat(quote.price.value) || 0;
-            console.log("quote>>>>>>>>>",state)
+            sumCompletedOrderAmount += parseFloat(quote?.price?.value) || 0;
+            // console.log("quote>>>>>>>>>",quote)
             const settlementItem = {
                 id: count,
                 order_id: _id,
@@ -57,8 +57,9 @@ export async function getSettlementsHandler(req, res) {
                 updated_at: updatedAt,
                 collector_recon_sent: false,
                 on_collector_recon_received: false,
-                // order_amount: quote["price"]["value"],
-                order_amount: 529,
+                order_amount: quote?.price?.value , // Apply optional chaining
+                
+                // order_amount: 529,
 
                 items: items.map(({ id, title, price, quantity }) => ({
                     sku: "862",
@@ -86,7 +87,7 @@ export async function getSettlementsHandler(req, res) {
         });
 
         confirmedOrders.forEach(order => {
-            // sumPendingOrderAmount += parseFloat(order.quote.price.value) || 0;
+            sumPendingOrderAmount += parseFloat(order?.quote?.price?.value) || 0;
             const settlementItem = {
                 id: ++count,
                 order_id: order.id,
@@ -106,10 +107,10 @@ export async function getSettlementsHandler(req, res) {
                 updated_at: order.updatedAt,
                 collector_recon_sent: false,
                 on_collector_recon_received: false,
-                // order_amount: parseFloat(order.quote.price.value) || 0,
-                order_amount: 529,
+                order_amount: parseFloat(order?.quote?.price?.value) || 0,
+                // order_amount: quote?.price?.value,
 
-                items: [], // No items for confirmed orders
+                //items: [], // No items for confirmed orders
                 return_window: '@ondc/org/return_window',
                 payment_type: 'PREPAID',
                 shopify_order_status: 'unfulfilled',
@@ -125,10 +126,10 @@ export async function getSettlementsHandler(req, res) {
             success: true,
             data: settlementData,
             count: count,
-            // sumCompletedOrderAmount: sumCompletedOrderAmount.toFixed(2),
-            // sumPendingOrderAmount: sumPendingOrderAmount.toFixed(2),
-            sumCompletedOrderAmount:5536,
-            sumPendingOrderAmount: 526,
+            sumCompletedOrderAmount: sumCompletedOrderAmount.toFixed(2),
+            sumPendingOrderAmount: sumPendingOrderAmount.toFixed(2),
+            // sumCompletedOrderAmount:5536,
+            // sumPendingOrderAmount: 526,
             // order:completedOrders
         });
     } catch (error) {
