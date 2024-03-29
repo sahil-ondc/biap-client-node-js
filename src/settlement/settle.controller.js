@@ -110,7 +110,7 @@ export async function getSettlementsHandler(req, res) {
                 order_amount: parseFloat(order?.quote?.price?.value) || 0,
                 // order_amount: quote?.price?.value,
 
-                items: [], // No items for confirmed orders
+                //items: [], // No items for confirmed orders
                 return_window: '@ondc/org/return_window',
                 payment_type: 'PREPAID',
                 shopify_order_status: 'unfulfilled',
