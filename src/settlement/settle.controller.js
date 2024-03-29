@@ -18,12 +18,12 @@ export async function getSettlementsHandler(req, res) {
          const skip = (pageValue - 1) * limitValue;
  
          // Fetch completed orders with pagination
-         const completedOrders = await OrderModel.find({})
+         const completedOrders = await OrderModel.find({}).sort({createdAt:-1})
              .limit(limitValue)
              .skip(skip);
  
         // console.log("completedOrders>>>>>>>>>>",JSON.stringify(completedOrders))
-        const confirmedOrders = await ConfirmModel.find({});
+        const confirmedOrders = await ConfirmModel.find({}).sort({createdAt:-1});
 
         let count = skip; // Initialize count with skip value
         let sumCompletedOrderAmount = 0;
