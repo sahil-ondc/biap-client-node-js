@@ -22,7 +22,7 @@ export async function getSettlementsHandler(req, res) {
              .limit(limitValue)
              .skip(skip);
  
-        console.log("completedOrders>>>>>>>>>>",completedOrders)
+        // console.log("completedOrders>>>>>>>>>>",JSON.stringify(completedOrders))
         const confirmedOrders = await ConfirmModel.find({});
 
         let count = skip; // Initialize count with skip value
@@ -61,15 +61,15 @@ export async function getSettlementsHandler(req, res) {
                 
                 // order_amount: 529,
 
-                items: items.map(({ id, title, price, quantity }) => ({
-                    sku: "862",
-                    name: "nhkjd",
-                    price: 56,
-                    title: "Good day",
-                    vendor: 'Vendor',
-                    item_id: 'Item ID',
-                    quantity: 7,
-                    product_id: 'Product ID',
+                items: items.map(({ id, title, price, quantity,product }) => ({
+                    sku: id,
+                    name: product?.descriptor?.name,
+                    price: product?.price?.value,
+                    title: product?.descriptor?.name,
+                    vendor:product?.provider_details?.descriptor?.name,
+                    item_id: id,
+                    quantity: quantity?.count,
+                    product_id: product?.id,
                     variant_id: 'Variant ID',
                     return_window: '@ondc/org/return_window',
                     variant_title: 'Variant Title'
@@ -130,7 +130,7 @@ export async function getSettlementsHandler(req, res) {
             sumPendingOrderAmount: sumPendingOrderAmount.toFixed(2),
             // sumCompletedOrderAmount:5536,
             // sumPendingOrderAmount: 526,
-            // order:completedOrders
+            //order:completedOrders
         });
     } catch (error) {
         console.error("Error fetching settlements:", error);
