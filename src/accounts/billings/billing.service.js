@@ -142,5 +142,6 @@ class BillingService {
             throw err;
           }
     }
+}
 
 export default BillingService;
