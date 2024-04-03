@@ -31,6 +31,12 @@ rootRouter.post(
   billingController.updateBillingAddress
 );
 
+
+rootRouter.delete('/v1/delete_billing_details/:id',
+  authentication(),
+  billingController.deleteBillingAddress
+);
+
 //#endregion
 
 //#region delivery address details

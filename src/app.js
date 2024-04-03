@@ -57,7 +57,15 @@ app.get("*", (req, res) => {
     res.send("API NOT FOUND");
 });
 
-
+app.use((err, req, res, next) => {
+    if (err) {
+        console.error('err.stack :', err.stack,'err.message : ',err.message)
+        res.status(500).json({ message: 'Internal server error!', success:false})
+    } else {
+     next()
+      }
+    }
+    )
 
 const port = process.env.PORT || 8080;
 
