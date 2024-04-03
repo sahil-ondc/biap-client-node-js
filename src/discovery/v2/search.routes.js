@@ -27,7 +27,26 @@ router.get(
 
 // get item details
 router.get(
-    '/v2/locations/:id',  searchController.getLocation,
+    '/v2/providers/:itemId', authentication(), searchController.getProvider,
+);
+
+// get item details
+router.get(
+    '/v2/provider-details',authentication(),searchController.getProvideDetails,
+);
+// get item details
+router.get(
+    '/v2/location-details',authentication(),searchController.getLocationDetails,
+);
+
+// get item details
+router.get(
+    '/v2/item-details',authentication(),searchController.getItemDetails,
+);
+
+// get item details
+router.get(
+    '/v2/locations/:id', authentication(), searchController.getLocation,
 );
 
 
