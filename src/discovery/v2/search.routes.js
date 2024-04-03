@@ -3,6 +3,7 @@ import {bhashiniTranslator} from '../../middlewares/bhashiniTranslator/search.js
 import {providerTranslator} from '../../middlewares/bhashiniTranslator/provider.js';
 
 import SearchController from './search.controller.js';
+import authentication from '../../middlewares/authentication.js';
 
 const router = new Router();
 const searchController = new SearchController();
