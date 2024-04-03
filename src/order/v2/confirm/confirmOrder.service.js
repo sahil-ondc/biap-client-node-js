@@ -85,7 +85,7 @@ class ConfirmOrderService {
      * @param {Number} total
      * @param {Boolean} confirmPayment
      */
-    async confirmAndUpdateOrder(orderRequest = {}, total, confirmPayment = true) {
+    async confirmAndUpdateOrder(orderRequest = {}, total, confirmPayment = true,paymentData) {
         const {
             context: requestContext,
             message: order = {}
@@ -112,32 +112,32 @@ class ConfirmOrderService {
                 pincode:requestContext?.pincode,
             });
 
-            if(order.payment.paymentGatewayEnabled){//remove this check once juspay is enabled
-                if (await this.arePaymentsPending(
-                    order?.payment,
-                    orderRequest?.context?.parent_order_id,
-                    total,
-                    confirmPayment,
-                )) {
-                    return {
-                        context,
-                        error: {
-                            message: "BAP hasn't received payment yet",
-                            status: "BAP_015",
-                            name: "PAYMENT_PENDING"
-                        }
-                    };
-                }
-
-                paymentStatus = await juspayService.getOrderStatus(orderRequest?.context?.transaction_id);
-
-            }else{
+            // if(order.payment.paymentGatewayEnabled){//remove this check once juspay is enabled
+            //     if (await this.arePaymentsPending(
+            //         order?.payment,
+            //         orderRequest?.context?.parent_order_id,
+            //         total,
+            //         confirmPayment,
+            //     )) {
+            //         return {
+            //             context,
+            //             error: {
+            //                 message: "BAP hasn't received payment yet",
+            //                 status: "BAP_015",
+            //                 name: "PAYMENT_PENDING"
+            //             }
+            //         };
+            //     }
+            //
+            //     paymentStatus = await juspayService.getOrderStatus(orderRequest?.context?.transaction_id);
+            //
+            // }else{
                 paymentStatus = {txn_id:requestContext?.transaction_id}
-            }
+            // }
 
             const bppConfirmResponse = await bppConfirmService.confirmV2(
                 context,
-                {...order,jusPayTransactionId:paymentStatus.txn_id},
+                {...order,jusPayTransactionId:paymentData.razorpay_order_id},
                 dbResponse
             );
 
@@ -398,7 +398,7 @@ class ConfirmOrderService {
         const confirmOrderResponse = await Promise.all(
             orders.map(async orderRequest => {
                 try {
-                    return await this.confirmAndUpdateOrder(orderRequest, total, true);
+                    return await this.confirmAndUpdateOrder(orderRequest, total, true,paymentData);
                 }
                 catch (err) {
                     return err.response.data;
