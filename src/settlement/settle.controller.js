@@ -9,7 +9,7 @@ export async function getSettlementsHandler(req, res) {
             res.status(401).send('Missing or wrong wil-api-key header');
             return;
         }
-        const { limit, page, bppId } = req.query;
+        const { limit = 20, page = 1, bppId } = req.query;
          // Parse limit and page to integers
          const limitValue = parseInt(limit);
          const pageValue = parseInt(page);
@@ -21,44 +21,42 @@ export async function getSettlementsHandler(req, res) {
          const completedOrders = await OrderModel.find({}).sort({createdAt:-1})
              .limit(limitValue)
              .skip(skip);
- 
-        // console.log("completedOrders>>>>>>>>>>",JSON.stringify(completedOrders))
-        const confirmedOrders = await ConfirmModel.find({}).sort({createdAt:-1});
 
-        let count = skip; // Initialize count with skip value
-        let sumCompletedOrderAmount = 0;
-        let sumPendingOrderAmount = 0;
+        const orderCount = await OrderModel.countDocuments({})
+
+        let sumCompletedOrderAmount = 0; // Need to manage calculation
+        let sumPendingOrderAmount = 0; // Need to manage calculation
         const settlementData = [];
 
-        completedOrders.forEach(({ _id, transactionId, context, createdAt, updatedAt, state, quote, items }) => {
-            count++;
+        completedOrders.forEach(({ _id, transactionId, context, createdAt, updatedAt, state, quote, items, id, 
+            settle_status, is_settlement_sent, settlement_id, settlement_reference_no, order_recon_status, counterparty_recon_status,
+            counterparty_diff_amount_value, counterparty_diff_amount_currency, receiver_settlement_message, receiver_settlement_message_code  }) => {
             sumCompletedOrderAmount += parseFloat(quote?.price?.value) || 0;
-            // console.log("quote>>>>>>>>>",quote)
             const settlementItem = {
-                id: count,
+                id: id || _id,
                 order_id: _id,
                 transaction_id: transactionId,
                 buyer_order_id: _id,
                 domain: context ? context.domain : "ONDC:RET18",
-                bpp_uri: "https://shopify-adapter-dev.thewitslab.com/api/v2",
-                bpp_id: "shopify-adapter-dev.thewitslab.com",
-                bap_uri: "https://buyer-app-stage.thewitslab.com",
-                bap_id: "buyer-app-stage.thewitslab.com",
-                settlement_id: null,
-                settlement_reference_no: null,
-                order_recon_status: null,
-                counterparty_recon_status: null,
-                counterparty_diff_amount_value: null,
-                counterparty_diff_amount_currency: null,
-                receiver_settlement_message: null,
-                receiver_settlement_message_code: null,
+                bpp_uri: context ? context.bpp_uri : "",
+                bpp_id: context ? context.bpp_id : "",
+                bap_uri: context ? context.bap_uri : "",
+                bap_id: context ? context.bap_id : "",
+                settlement_id: settlement_id,
+                settlement_reference_no: settlement_reference_no,
+                order_recon_status: order_recon_status,
+                counterparty_recon_status: counterparty_recon_status,
+                counterparty_diff_amount_value: counterparty_diff_amount_value,
+                counterparty_diff_amount_currency: counterparty_diff_amount_currency,
+                receiver_settlement_message: receiver_settlement_message,
+                receiver_settlement_message_code: receiver_settlement_message_code,
                 created_at: createdAt,
                 order_status: state || "Accepted",
                 updated_at: updatedAt,
                 collector_recon_sent: false,
                 on_collector_recon_received: false,
                 order_amount: quote?.price?.value , // Apply optional chaining
-                
+                settle_status,
                 // order_amount: 529,
 
                 items: items.map(({ id, title, price, quantity,product }) => ({
@@ -80,60 +78,21 @@ export async function getSettlementsHandler(req, res) {
                 replaced_with_order_id: null,
                 customer_id: 'Customer ID',
                 replaced_order_details: null,
-                settlement_type: 'Pending'
+                settlement_type: settle_status || 'Pending'
             };
 
-            settlementData.push(settlementItem);
-        });
-
-        confirmedOrders.forEach(order => {
-            sumPendingOrderAmount += parseFloat(order?.quote?.price?.value) || 0;
-            const settlementItem = {
-                id: ++count,
-                order_id: order.id,
-                transaction_id: order.transaction_id,
-                buyer_order_id: order.id,
-                settlement_id: null,
-                settlement_reference_no: null,
-                order_recon_status: null,
-                recon_status: null,
-                counterparty_recon_status: null,
-                counterparty_diff_amount_value: null,
-                counterparty_diff_amount_currency: null,
-                receiver_settlement_message: null,
-                receiver_settlement_message_code: null,
-                created_at: order.createdAt,
-                order_status: order.state,
-                updated_at: order.updatedAt,
-                collector_recon_sent: false,
-                on_collector_recon_received: false,
-                order_amount: parseFloat(order?.quote?.price?.value) || 0,
-                // order_amount: quote?.price?.value,
-
-                //items: [], // No items for confirmed orders
-                return_window: '@ondc/org/return_window',
-                payment_type: 'PREPAID',
-                shopify_order_status: 'unfulfilled',
-                replaced_with_order_id: null,
-                customer_id: 'Customer ID',
-                replaced_order_details: null,
-                settlement_type: 'Pending'
-            };
             settlementData.push(settlementItem);
         });
 
         res.send({
             success: true,
             data: settlementData,
-            count: count,
+            count: orderCount,
             sumCompletedOrderAmount: sumCompletedOrderAmount.toFixed(2),
             sumPendingOrderAmount: sumPendingOrderAmount.toFixed(2),
-            // sumCompletedOrderAmount:5536,
-            // sumPendingOrderAmount: 526,
-            //order:completedOrders
         });
     } catch (error) {
         console.error("Error fetching settlements:", error);
-        res.status(500).send("Error fetching settlements");
+        res.status(500).send({ success: false, message: "Error fetching settlements" });
     }
 }
