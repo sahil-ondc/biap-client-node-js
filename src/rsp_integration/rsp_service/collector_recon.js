@@ -190,7 +190,7 @@ export const initiateRsp = async () => {
                         .beneficiary_name,
                     beneficiary_address: 
                       seller?.message?.order?.fulfillments[0]?.start?.location
-                        ?.address?.building.replace(/^\"|\"$/g, '').replace(/\\/g, '')
+                        ?.address?.building?.replace(/^\"|\"$/g, '')?.replace(/\\/g, '')
                     ,
                     settlement_status: "NOT-PAID",
                   },
