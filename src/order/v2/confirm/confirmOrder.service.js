@@ -86,7 +86,7 @@ class ConfirmOrderService {
      * @param {Number} total
      * @param {Boolean} confirmPayment
      */
-    async confirmAndUpdateOrder(orderRequest = {}, total, confirmPayment = true,paymentData) {
+    async confirmAndUpdateOrder(orderRequest = {}, total, confirmPayment = true) {
         const {
             context: requestContext,
             message: order = {}
@@ -138,7 +138,7 @@ class ConfirmOrderService {
 
             const bppConfirmResponse = await bppConfirmService.confirmV2(
                 context,
-                {...order,jusPayTransactionId:paymentData.razorpay_order_id},
+                {...order,jusPayTransactionId:paymentStatus.txn_id},
                 dbResponse
             );
 
@@ -398,15 +398,15 @@ class ConfirmOrderService {
             total += order?.message?.payment?.paid_amount;
         });
 
-        console.log(orders)
         const confirmOrderResponse = await Promise.all(
             orders.map(async orderRequest => {
                 try {
-                    if(paymentData){
-                        return await this.confirmAndUpdateOrder(orderRequest, total, true,paymentData);
-                    }else{
-                        return await this.confirmAndUpdateOrder(orderRequest, total, false,paymentData);
-                    }
+                    return await this.confirmAndUpdateOrder(orderRequest, total, true);
+                    // if(paymentData){
+                    //     return await this.confirmAndUpdateOrder(orderRequest, total, true,paymentData);
+                    // }else{
+                    //     return await this.confirmAndUpdateOrder(orderRequest, total, false,paymentData);
+                    // }
 
                 }
                 catch (err) {
@@ -440,7 +440,6 @@ class ConfirmOrderService {
                 protocolConfirmResponse.context.message_id &&
                 protocolConfirmResponse.context.transaction_id
             ) {
-                console.log("protocolConfirmResponse>>>>>>>>>",JSON.stringify(protocolConfirmResponse))//,protocolConfirmResponse)
                 return protocolConfirmResponse;
 
             } else {
