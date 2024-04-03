@@ -30,94 +30,93 @@ export async function getSettlementsHandler(req, res) {
         let sumPendingOrderAmount = 0;
         const settlementData = [];
 
-        completedOrders.forEach(({ _id, transactionId, context, createdAt, updatedAt, state, quote, items }) => {
-            count++;
-            sumCompletedOrderAmount += parseFloat(quote?.price?.value) || 0;
-            // console.log("quote>>>>>>>>>",quote)
-            const settlementItem = {
-                id: count,
-                order_id: _id,
-                transaction_id: transactionId,
-                buyer_order_id: _id,
-                domain: context ? context.domain : "ONDC:RET18",
-                bpp_uri: "https://shopify-adapter-dev.thewitslab.com/api/v2",
-                bpp_id: "shopify-adapter-dev.thewitslab.com",
-                bap_uri: "https://buyer-app-stage.thewitslab.com",
-                bap_id: "buyer-app-stage.thewitslab.com",
-                settlement_id: null,
-                settlement_reference_no: null,
-                order_recon_status: null,
-                counterparty_recon_status: null,
-                counterparty_diff_amount_value: null,
-                counterparty_diff_amount_currency: null,
-                receiver_settlement_message: null,
-                receiver_settlement_message_code: null,
-                created_at: createdAt,
-                order_status: state || "Accepted",
-                updated_at: updatedAt,
-                collector_recon_sent: false,
-                on_collector_recon_received: false,
-                order_amount: quote?.price?.value , // Apply optional chaining
-                
-                // order_amount: 529,
-
-                items: items.map(({ id, title, price, quantity,product }) => ({
-                    sku: id,
-                    name: product?.descriptor?.name,
-                    price: product?.price?.value,
-                    title: product?.descriptor?.name,
-                    vendor:product?.provider_details?.descriptor?.name,
-                    item_id: id,
-                    quantity: quantity?.count,
-                    product_id: product?.id,
-                    variant_id: 'Variant ID',
-                    return_window: '@ondc/org/return_window',
-                    variant_title: 'Variant Title'
-                })),
-                return_window: '@ondc/org/return_window',
-                payment_type: 'PREPAID',
-                shopify_order_status: 'unfulfilled',
-                replaced_with_order_id: null,
-                customer_id: 'Customer ID',
-                replaced_order_details: null,
-                settlement_type: 'Pending'
-            };
-
-            settlementData.push(settlementItem);
-        });
+        completedOrders.forEach(async (order) => {
+              // count++;
+  
+              sumCompletedOrderAmount += parseFloat(quote?.price?.value) || 0;
+              // console.log("quote>>>>>>>>>",quote)
+              const settlementItem = {
+                  id: order?._id,
+                  order_id: order?.id,
+                  transaction_id: order?.transactionId,
+                  buyer_order_id: order?.userId,
+                  domain: order?.domain || "ONDC:RET18",
+                  bpp_uri: order?.bpp_uri || "https://shopify-adapter-dev.thewitslab.com/api/v2",
+                  bpp_id: order?.bppId || "shopify-adapter-dev.thewitslab.com",
+                  bap_uri: order?.bap_uri || "https://buyer-app-stage.thewitslab.com",
+                  bap_id: order?.bap_uri || "buyer-app-stage.thewitslab.com",
+                  settlement_id: order?.settlementDetails?.["@ondc/org/settlement_details"]?.id || '',
+                  settlement_reference_no: order?.settlementDetails?.["@ondc/org/settlement_details"]?.settlement_reference_no || '',
+                  order_recon_status: order?.settlementDetails?.["@ondc/org/settlement_details"]?.order_recon_status || '',
+                  counterparty_recon_status: order?.settlementDetails?.["@ondc/org/settlement_details"]?.counterparty_recon_status || '',
+                  counterparty_diff_amount_value: order?.settlementDetails?.["@ondc/org/settlement_details"]?.counterparty_diff_amount_value || '',
+                  counterparty_diff_amount_currency: order?.settlementDetails?.["@ondc/org/settlement_details"]?.counterparty_diff_amount_currency || '',
+                  receiver_settlement_message: order?.settlementDetails?.["@ondc/org/settlement_details"]?.receiver_settlement_message || '',
+                  receiver_settlement_message_code: order?.settlementDetails?.["@ondc/org/settlement_details"]?.receiver_settlement_message_code || '',
+                  created_at: order?.createdAt, // Use order.createdAt from the order payload
+                  order_status: order?.state || "Accepted", // Use order.state from the order payload
+                  updated_at: order?.updatedAt, // Use order.updatedAt from the order payload
+                  collector_recon_sent: order?.collector_recon_sent || false,
+                  on_collector_recon_received: order?.on_collector_recon_received || false,
+                  order_amount: order?.quote?.price?.value, // Use order.quote.price.value from the order payload with optional chaining
+              
+                  items: order.items.map((item) => ({
+                      sku: item?.product?.id,
+                      name: item?.product?.descriptor?.name,
+                      price: item?.product?.price?.value,
+                      title: item?.product?.descriptor?.name,
+                      vendor: item?.product?.provider_details?.descriptor?.name,
+                      item_id: item?.id,
+                      quantity: item?.quantity?.count,
+                      product_id: item?.product?.id,
+                      variant_id: item?.variant_id || 'Variant ID',
+                      return_window: item?.return_window || '@ondc/org/return_window',
+                      variant_title: item?.variant_title || 'Variant Title'
+                  })),
+                  return_window: order?.["@ondc/org/return_window"],
+                  payment_type: order?.payment?.params?.type || 'PREPAID',
+                  shopify_order_status: order?.product?.fulfillment_status || 'unfulfilled',
+                  replaced_with_order_id: order?.replaced_with_order_id || '',
+                  customer_id: order?.replaced_with_order_id || 'Customer ID',
+                  replaced_order_details: order?.replaced_order_details || '',
+                  settlement_type: order?.settlement_type || 'Pending'
+              };
+  
+              settlementData.push(settlementItem);
+          });
 
         confirmedOrders.forEach(order => {
             sumPendingOrderAmount += parseFloat(order?.quote?.price?.value) || 0;
             const settlementItem = {
-                id: ++count,
-                order_id: order.id,
-                transaction_id: order.transaction_id,
-                buyer_order_id: order.id,
-                settlement_id: null,
-                settlement_reference_no: null,
-                order_recon_status: null,
-                recon_status: null,
-                counterparty_recon_status: null,
-                counterparty_diff_amount_value: null,
-                counterparty_diff_amount_currency: null,
-                receiver_settlement_message: null,
-                receiver_settlement_message_code: null,
-                created_at: order.createdAt,
-                order_status: order.state,
-                updated_at: order.updatedAt,
-                collector_recon_sent: false,
-                on_collector_recon_received: false,
-                order_amount: parseFloat(order?.quote?.price?.value) || 0,
-                // order_amount: quote?.price?.value,
+                id: order?._id,
+                order_id: order.message.order.id,
+    transaction_id: order.context.transaction_id,
+    buyer_order_id: order.message.order.id,
+    settlement_id: order?.message?.order?.payment?.["@ondc/org/settlement_details"]?.id || '',
+    settlement_reference_no: order?.message?.order?.payment?.["@ondc/org/settlement_details"]?.settlement_reference_no || '',
+    order_recon_status: order?.message?.order?.payment?.["@ondc/org/settlement_details"]?.order_recon_status || '',
+    counterparty_recon_status: order?.message?.order?.payment?.["@ondc/org/settlement_details"]?.counterparty_recon_status || '',
+    counterparty_diff_amount_value: order?.message?.order?.payment?.["@ondc/org/settlement_details"]?.counterparty_diff_amount_currency || '',
+    counterparty_diff_amount_currency: order?.message?.order?.payment?.["@ondc/org/settlement_details"]?.counterparty_diff_amount_currency || '',
+    receiver_settlement_message: order?.message?.order?.payment?.["@ondc/org/settlement_details"]?.receiver_settlement_message || '',
+    receiver_settlement_message_code: order?.message?.order?.payment?.["@ondc/org/settlement_details"]?.receiver_settlement_message_code || '',
+    created_at: order?.created_at,
+    order_status: order?.message?.order?.state,
+    updated_at: order?.message?.order?.updated_at,
+    collector_recon_sent: order?.message?.order?.payment?.["@ondc/org/settlement_details"]?.collector_recon_sent || false,
+    on_collector_recon_received: order?.message?.order?.payment?.["@ondc/org/settlement_details"]?.on_collector_recon_received || false,
+    order_amount: parseFloat(order?.message?.order?.quote?.price?.value) || 0,
+    // order_amount: quote?.price?.value,
 
-                //items: [], // No items for confirmed orders
-                return_window: '@ondc/org/return_window',
-                payment_type: 'PREPAID',
-                shopify_order_status: 'unfulfilled',
-                replaced_with_order_id: null,
-                customer_id: 'Customer ID',
-                replaced_order_details: null,
-                settlement_type: 'Pending'
+    //items: [], // No items for confirmed orders
+
+    return_window: order?.["@ondc/org/return_window"] || '',
+    payment_type: order?.message?.order.payment?.type || 'PREPAID',
+    shopify_order_status: order?.message?.order.payment?.status || 'unfulfilled',
+    replaced_with_order_id: order?.replaced_with_order_id || '',
+    customer_id: order?.replaced_with_order_id || 'Customer ID',
+    replaced_order_details: order?.replaced_order_details || '',
+    settlement_type: order?.message?.order?.payment?.["@ondc/org/settlement_details"]?.settlement_type || 'Pending'
             };
             settlementData.push(settlementItem);
         });
