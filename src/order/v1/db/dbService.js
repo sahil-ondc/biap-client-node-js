@@ -32,7 +32,7 @@ const addOrUpdateOrderWithTransactionIdAndProvider = async (transactionId, provi
     return await OrderMongooseModel.findOneAndUpdate(
         {
             transactionId: transactionId,
-            "provider.id":providerId
+            "provider.id":providerId,
         },
         {
             ...orderSchema

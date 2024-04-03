@@ -120,3 +120,20 @@ export const CHANGE_TYPES = {
     STATUS_UPDATE: 'STATUS_UPDATE',
     INTENT_UPDATE: 'INTENT_UPDATE',
 };
+
+
+export const PAYERDETAIL={
+    PAYER_NAME:'Example1 company Pvt. Ltd',
+    PAYERADDRESS:'The Velvet Vignette',
+    PAYER_ACCOUNT_NO:"509424924294248",
+    PAYER_BANK_CODE:"HDFC0000000",
+    PAYER_VIRTUAL_PAYMENT_ADDRESS:"80abc@abctMh2h"
+}
+
+
+export const SETTLE_STATUS = {
+    PENDING: "Pending",
+    DEBIT: "Debit",
+    CREDIT: "Credit",
+    SETTLE: "Settle",
+}
