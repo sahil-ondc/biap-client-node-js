@@ -20,7 +20,7 @@ class SseController {
         try {
             const { query = {} } = req;
             const { messageId } = query;
-
+            console.log("onEvent -----------x-->", messageId)
             if (messageId && messageId.length) {
 
                 const configureSse = new ConfigureSse(req, res, messageId);
@@ -30,14 +30,15 @@ class SseController {
                 // console.log("initSSE-----------x-->",initSSE)
 
                 addSSEConnection(messageId, initSSE);
+                res.status(200).json({ success: true, message: "Event initiated!" });
 
+            } else {
+                res.status(400).json({ success: false, message: "Invalid Message id!" });
             }
-
-            // res.json({});
         }
         catch (err) {
             console.log("error----------->",err);
-            throw err;
+            res.status(400).json({ success: false, message: "Something went wrong!" });
         }
     }
 
