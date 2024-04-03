@@ -94,7 +94,7 @@ const getOrderByTransactionIdAndProvider = async (transactionId, providerId) => 
         transactionId: transactionId,
         "provider.id":providerId
     });
-
+    console.log("order getOrderByTransactionIdAndProvider ------------------------------>", order)
     if (!(order || order.length))
         throw new NoRecordFoundError();
     else

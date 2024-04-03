@@ -401,7 +401,8 @@ class ConfirmOrderService {
                     return await this.confirmAndUpdateOrder(orderRequest, total, true,paymentData);
                 }
                 catch (err) {
-                    return err.response.data;
+                    console.log("error confirmMultipleOrder ----", err)
+                    return err?.response?.data;
                 }
             })
         );

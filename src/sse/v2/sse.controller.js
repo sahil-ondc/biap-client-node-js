@@ -30,15 +30,12 @@ class SseController {
                 // console.log("initSSE-----------x-->",initSSE)
 
                 addSSEConnection(messageId, initSSE);
-                res.status(200).json({ success: true, message: "Event initiated!" });
 
-            } else {
-                res.status(400).json({ success: false, message: "Invalid Message id!" });
             }
         }
         catch (err) {
             console.log("error----------->",err);
-            res.status(400).json({ success: false, message: "Something went wrong!" });
+            throw err;
         }
     }
 
