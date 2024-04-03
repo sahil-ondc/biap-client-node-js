@@ -9,7 +9,7 @@ async function translate(data) {
 
         console.log("translate text--->",data)
         //check if data present in cache? if yes return else translate
-        let cacheTranslation = await redisCache.get(`${data.text}_${data.source_language}_${data.target_language}`)
+        let cacheTranslation = null; // await redisCache.get(`${data.text}_${data.source_language}_${data.target_language}`)
         if(cacheTranslation){
             console.log("translation found in cache",cacheTranslation)
             return cacheTranslation
@@ -130,7 +130,7 @@ async function translate(data) {
             }
             if(translatedText){
                 //set translated text in redis cache
-                await redisCache.set(`${data.text}_${data.source_language}_${data.target_language}`,translatedText)
+                // await redisCache.set(`${data.text}_${data.source_language}_${data.target_language}`,translatedText)
 
                 return translatedText
             }else{
