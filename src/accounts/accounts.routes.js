@@ -66,7 +66,7 @@ rootRouter.delete(
   deliveryAddressController.deleteDeliveryAddress
 );
 
-rootRouter.get("/v2/map/accesstoken", authentication(), mapController.mmiToken);
+rootRouter.get("/v2/map/accesstoken", mapController.mmiToken);
 
 rootRouter.get("/v2/map/getCordinates", mapController.getCoordinates);
 rootRouter.get("/v2/map/getPinCode", mapController.getPincode);
